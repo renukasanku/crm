@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Contact Us</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 480px; margin: 60px auto; }
+    label { display: block; margin-top: 12px; font-weight: 600; }
+    input, textarea { width: 100%; padding: 8px; margin-top: 4px; border: 1px solid #ccc; border-radius: 4px; }
+    button { margin-top: 16px; padding: 10px 18px; background: #2563eb; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+    #result { margin-top: 16px; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <h1>Contact Us</h1>
+  <form id="contactForm">
+    <label>Name</label>
+    <input type="text" id="name" required />
+
+    <label>Email</label>
+    <input type="email" id="email" required />
+
+    <label>Phone</label>
+    <input type="text" id="phone" />
+
+    <label>Message</label>
+    <textarea id="message" rows="4"></textarea>
+
+    <button type="submit">Submit</button>
+  </form>
+  <div id="result"></div>
+
+  <script>
+    const API_URL = 'http://localhost:5000/api/leads';
+
+    document.getElementById('contactForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const payload = {
+        name: document.getElementById('name').value,
+        email: document.getElementById('email').value,
+        phone: document.getElementById('phone').value,
+        message: document.getElementById('message').value,
+        source: 'website'
+      };
+
+      try {
+        const res = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          document.getElementById('result').textContent = 'Thank you! We will be in touch soon.';
+          document.getElementById('contactForm').reset();
+        } else {
+          const data = await res.json();
+          document.getElementById('result').textContent = data.message || 'Submission failed.';
+        }
+      } catch (err) {
+        document.getElementById('result').textContent = 'Error submitting form.';
+      }
+    });
+  </script>
+</body>
+</html>
